@@ -1,8 +1,10 @@
 package com.example.grocerystoremanager
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -34,6 +36,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.firebase.database.FirebaseDatabase
 
 class RegisterActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -172,7 +175,14 @@ fun RegistrationScreen() {
                             }
 
                             else -> {
-//                            signInGuest(useremail, userpassword, context)
+                                val userDetails = UserDetails(
+                                    userName,
+                                    useremail,
+                                    userLocation,
+                                    userpassword
+                                )
+                                registerUser(userDetails,context);
+
                             }
 
                         }
@@ -221,6 +231,42 @@ fun RegistrationScreen() {
     }
 
 }
+
+fun registerUser(userDetails: UserDetails, context: Context) {
+
+    val firebaseDatabase = FirebaseDatabase.getInstance()
+    val databaseReference = firebaseDatabase.getReference("StoreDetails")
+
+    databaseReference.child(userDetails.emailid.replace(".", ","))
+        .setValue(userDetails)
+        .addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Toast.makeText(context, "You Registered Successfully", Toast.LENGTH_SHORT)
+                    .show()
+
+            } else {
+                Toast.makeText(
+                    context,
+                    "Registration Failed",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+        .addOnFailureListener { _ ->
+            Toast.makeText(
+                context,
+                "Something went wrong",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+}
+
+data class UserDetails(
+    var name : String = "",
+    var emailid : String = "",
+    var age : String = "",
+    var password: String = ""
+)
 
 @Preview(showBackground = true)
 @Composable

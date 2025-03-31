@@ -1,8 +1,10 @@
 package com.example.grocerystoremanager
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -33,6 +35,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.firebase.database.FirebaseDatabase
 
 class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -138,7 +141,14 @@ fun LoginScreen() {
                             }
 
                             else -> {
-//                            signInGuest(useremail, userpassword, context)
+                                val userDetails = UserDetails(
+                                    "",
+                                    useremail,
+                                    "",
+                                    userpassword
+                                )
+
+                                loginUser(userDetails,context)
                             }
 
                         }
@@ -186,6 +196,37 @@ fun LoginScreen() {
         }
     }
 
+}
+
+
+fun loginUser(userDetails: UserDetails, context: Context) {
+
+    val firebaseDatabase = FirebaseDatabase.getInstance()
+    val databaseReference = firebaseDatabase.getReference("StoreDetails").child(userDetails.emailid.replace(".", ","))
+
+    databaseReference.get().addOnCompleteListener { task ->
+        if (task.isSuccessful) {
+            val donorData = task.result?.getValue(UserDetails::class.java)
+            if (donorData != null) {
+                if (donorData.password == userDetails.password) {
+
+                    Toast.makeText(context, "Login Sucessfully", Toast.LENGTH_SHORT).show()
+
+                } else {
+                    Toast.makeText(context, "Seems Incorrect Credentials", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                Toast.makeText(context, "Your account not found", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            Toast.makeText(
+                context,
+                "Something went wrong",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+
+    }
 }
 
 @Preview(showBackground = true)
