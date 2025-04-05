@@ -210,6 +210,8 @@ fun loginUser(userDetails: UserDetails, context: Context) {
             if (donorData != null) {
                 if (donorData.password == userDetails.password) {
 
+                    context.startActivity(Intent(context, StoreHomeActivity::class.java))
+
                     Toast.makeText(context, "Login Sucessfully", Toast.LENGTH_SHORT).show()
 
                 } else {
