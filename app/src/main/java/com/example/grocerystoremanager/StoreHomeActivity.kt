@@ -3,15 +3,13 @@ package com.example.grocerystoremanager
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -34,15 +32,15 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.compose.ui.unit.sp
 
 class StoreHomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            StoreHomeActivityScreen()
+            StoreHomeScreen()
         }
     }
 }
@@ -255,5 +253,196 @@ fun StoreHomeActivityScreen() {
 
         }
 
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun StoreHomeScreenP() {
+    StoreHomeScreen()
+}
+
+@Composable
+fun StoreHomeScreen() {
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                modifier = Modifier
+                    .padding(12.dp),
+                text = "Grocery Store Manager",
+                style = MaterialTheme.typography.headlineSmall.copy(
+                    color = Color.Black,
+                    fontWeight = FontWeight.Bold
+                )
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Image(
+                modifier = Modifier
+                    .size(36.dp),
+                painter = painterResource(id = R.drawable.iv_grocery),
+                contentDescription = "Store Icon"
+            )
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 8.dp)
+                .background(
+                    color = colorResource(id = R.color.bg1),
+                    shape = RoundedCornerShape(6.dp)
+                )
+                .border(
+                    width = 1.dp,
+                    color = colorResource(id = R.color.bg1),
+                    shape = RoundedCornerShape(6.dp)
+                )
+                .padding(8.dp)
+        ) {
+
+            Spacer(modifier = Modifier.width(20.dp))
+
+            Image(
+                modifier = Modifier
+                    .size(86.dp),
+                painter = painterResource(id = R.drawable.iv_grocery),
+                contentDescription = "Store Icon"
+            )
+
+            Spacer(modifier = Modifier.width(40.dp))
+
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    modifier = Modifier,
+                    text = "Products List",
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        color = Color.Black,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = "See list of products that are available",
+                    style = MaterialTheme.typography.titleSmall.copy(
+                        color = Color.Black,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+
+                Text(
+                    modifier = Modifier
+                        .clickable {
+
+                        }
+                        .background(
+                            color = colorResource(id = R.color.black),
+                            shape = RoundedCornerShape(6.dp)
+                        )
+                        .border(
+                            width = 1.dp,
+                            color = colorResource(id = R.color.black),
+                            shape = RoundedCornerShape(6.dp)
+                        )
+                        .padding(horizontal = 6.dp, vertical = 4.dp),
+                    text = "View Products",
+                    textAlign = TextAlign.Center,
+                    color = Color.White,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+
+        Text(
+            modifier = Modifier.padding(horizontal = 12.dp),
+            text = "Manage Store",
+            style = MaterialTheme.typography.titleMedium.copy(
+                color = Color.Black,
+                fontWeight = FontWeight.Bold
+            )
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth()
+                .padding(horizontal = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+
+            ManageItem(itemName = "Add\nProducts", itemImage = R.drawable.iv_grocery, itemCount = 1)
+            ManageItem(itemName = "Manage\nVendors", itemImage = R.drawable.iv_grocery, itemCount = 1)
+            ManageItem(itemName = "Manage\nStock", itemImage = R.drawable.iv_grocery, itemCount = 1)
+            ManageItem(itemName = "Update\nProducts", itemImage = R.drawable.iv_grocery, itemCount = 1)
+
+
+
+        }
+
+
+    }
+}
+
+@Composable
+fun ManageItem(itemName: String,itemImage: Int,itemCount: Int)
+{
+    val context = LocalContext.current as Activity
+
+    Column(
+        modifier = Modifier
+            .clickable {
+                when(itemCount)
+                {
+                    1 -> {
+                        context.startActivity(Intent(context, AddProductsActivity::class.java))
+                    }
+                }
+            },
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            modifier = Modifier
+                .size(58.dp)
+                .background(
+                    color = colorResource(id = R.color.bg1),
+                    shape = RoundedCornerShape(6.dp)
+                )
+                .border(
+                    width = 1.dp,
+                    color = colorResource(id = R.color.bg1),
+                    shape = RoundedCornerShape(6.dp)
+                )
+                .padding(12.dp),
+            painter = painterResource(id = itemImage),
+            contentDescription = "Store Icon"
+        )
+
+        Text(
+            modifier = Modifier
+                .padding(horizontal = 12.dp),
+            text = itemName,
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.titleSmall.copy(
+                color = Color.Black,
+                fontWeight = FontWeight.Bold
+            )
+        )
     }
 }
