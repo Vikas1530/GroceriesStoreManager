@@ -65,8 +65,18 @@ fun StoreStatusValidator() {
         SplashScreen()
 
     } else {
-        context.startActivity(Intent(context, LoginActivity::class.java))
-        context.finish()
+
+        val currentStatus = GroceryStoreData.readLS(context)
+
+        if(currentStatus)
+        {
+            context.startActivity(Intent(context, StoreHomeActivity::class.java))
+            context.finish()
+        }else{
+            context.startActivity(Intent(context, LoginActivity::class.java))
+            context.finish()
+        }
+
     }
 
 }

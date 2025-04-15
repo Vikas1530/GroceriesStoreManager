@@ -264,6 +264,9 @@ fun StoreHomeScreenP() {
 
 @Composable
 fun StoreHomeScreen() {
+
+    val context = LocalContext.current as Activity
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -346,7 +349,7 @@ fun StoreHomeScreen() {
                 Text(
                     modifier = Modifier
                         .clickable {
-
+                            context.startActivity(Intent(context, ViewProductsActivity::class.java))
                         }
                         .background(
                             color = colorResource(id = R.color.black),

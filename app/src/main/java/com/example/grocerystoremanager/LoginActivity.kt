@@ -206,9 +206,13 @@ fun loginUser(userDetails: UserDetails, context: Context) {
 
     databaseReference.get().addOnCompleteListener { task ->
         if (task.isSuccessful) {
-            val donorData = task.result?.getValue(UserDetails::class.java)
-            if (donorData != null) {
-                if (donorData.password == userDetails.password) {
+            val storeData = task.result?.getValue(UserDetails::class.java)
+            if (storeData != null) {
+                if (storeData.password == userDetails.password) {
+
+                    GroceryStoreData.writeLS(context, true)
+                    GroceryStoreData.writeMail(context, storeData.emailid)
+                    GroceryStoreData.writeUserName(context, storeData.name)
 
                     context.startActivity(Intent(context, StoreHomeActivity::class.java))
 
