@@ -3,9 +3,12 @@ package com.example.grocerystoremanager
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricPrompt
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -33,23 +36,25 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            StoreStatusValidator()
+            StoreStatusValidator(this)
         }
     }
 }
 
 @Composable
-fun StoreStatusValidator() {
+fun StoreStatusValidator(fragmentActivity : FragmentActivity) {
     val context = LocalContext.current as Activity
     var showSplash by remember { mutableStateOf(true) }
 
@@ -68,11 +73,67 @@ fun StoreStatusValidator() {
 
         val currentStatus = GroceryStoreData.readLS(context)
 
-        if(currentStatus)
-        {
-            context.startActivity(Intent(context, StoreHomeActivity::class.java))
-            context.finish()
-        }else{
+//        if(currentStatus)
+//        {
+//            context.startActivity(Intent(context, StoreHomeActivity::class.java))
+//            context.finish()
+//        }else{
+//            context.startActivity(Intent(context, LoginActivity::class.java))
+//            context.finish()
+//        }
+
+        if (currentStatus) {
+            val biometricManager = BiometricManager.from(fragmentActivity)
+            if (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG) == BiometricManager.BIOMETRIC_SUCCESS) {
+                val executor = ContextCompat.getMainExecutor(fragmentActivity)
+                val biometricPrompt =
+                    BiometricPrompt(
+                        fragmentActivity,
+                        executor,
+                        object : BiometricPrompt.AuthenticationCallback() {
+                            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                                super.onAuthenticationSucceeded(result)
+                                context.startActivity(
+                                    Intent(
+                                        context,
+                                        StoreHomeActivity::class.java
+                                    )
+                                )
+                            }
+
+                            override fun onAuthenticationError(
+                                errorCode: Int,
+                                errString: CharSequence
+                            ) {
+                                super.onAuthenticationError(errorCode, errString)
+                                Toast.makeText(context, "Something went wrong", Toast.LENGTH_LONG)
+                                    .show()
+                            }
+
+                            override fun onAuthenticationFailed() {
+                                super.onAuthenticationFailed()
+                                Toast.makeText(context, "Something went wrong", Toast.LENGTH_LONG)
+                                    .show()
+                            }
+                        })
+
+                val promptInfo = BiometricPrompt.PromptInfo.Builder()
+                    .setTitle("FingerPrint Verification")
+                    .setSubtitle("Place your finger to continue")
+                    .setNegativeButtonText("Close")
+                    .build()
+
+                biometricPrompt.authenticate(promptInfo)
+            } else {
+                Toast.makeText(
+                    fragmentActivity,
+                    "This device doesn't support fingerprint",
+                    Toast.LENGTH_LONG
+                ).show()
+                context.startActivity(Intent(context, StoreHomeActivity::class.java))
+
+            }
+        } else {
             context.startActivity(Intent(context, LoginActivity::class.java))
             context.finish()
         }

@@ -1,9 +1,11 @@
 package com.example.grocerystoremanager
 
 import android.app.Activity
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
@@ -24,6 +26,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
@@ -46,28 +49,27 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
-class ViewProductsActivity : ComponentActivity() {
+class ManageStockActivity : ComponentActivity() {
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            StockListScreen()
+            ManageStockListScreen()
         }
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun StockListScreen() {
+fun ManageStockListScreen() {
     val context = LocalContext.current as Activity
     val userEmail = GroceryStoreData.readMail(context)
     var productsList by remember { mutableStateOf(listOf<ProductData>()) }
@@ -76,9 +78,6 @@ fun StockListScreen() {
     var searchQuery by remember { mutableStateOf("") }
     var filterExpiry by remember { mutableStateOf(false) }
     var filterLowStock by remember { mutableStateOf(false) }
-
-    var showDialog by remember { mutableStateOf(false) }
-    var lowStockProducts by remember { mutableStateOf(listOf<ProductData>()) }
 
     val filteredProducts = productsList.filter {
         it.name.contains(searchQuery, ignoreCase = true)
@@ -104,46 +103,26 @@ fun StockListScreen() {
     }
 
 
-//    LaunchedEffect(userEmail) {
-//        getProducts() { orders ->
-//            productsList = orders
-//            loadProducts = false
-//        }
-//    }
-
     LaunchedEffect(userEmail) {
-        getProducts { orders ->
+        getProducts() { orders ->
             productsList = orders
             loadProducts = false
-
-            val lowStock = orders.filter { it.stock.toInt() < 20 }
-            if (lowStock.isNotEmpty()) {
-                lowStockProducts = lowStock
-                showDialog = true
-            }
         }
     }
 
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = { showDialog = false },
-            confirmButton = {
-                TextButton(onClick = { showDialog = false }) {
-                    Text("OK")
-                }
-            },
-            title = { Text("Low Stock Alert") },
-            text = {
-                Column {
-                    Text("The following products are low in stock:")
-                    Spacer(modifier = Modifier.height(8.dp))
-                    lowStockProducts.forEach {
-                        Text("- ${it.name}: ${it.stock} left")
-                    }
-                }
-            }
-        )
-    }
+//    LaunchedEffect(userEmail) {
+//        getProducts { orders ->
+//            productsList = orders
+//            loadProducts = false
+//
+//            val lowStock = orders.filter { it.stock.toInt() < 20 }
+//            if (lowStock.isNotEmpty()) {
+//                lowStockProducts = lowStock
+//                showDialog = true
+//            }
+//        }
+//    }
+
 
     Column(modifier = Modifier.fillMaxSize()) {
         Row(
@@ -167,7 +146,7 @@ fun StockListScreen() {
             Text(
                 modifier = Modifier
                     .padding(12.dp),
-                text = "View Products",
+                text = "Manage Stock",
                 style = MaterialTheme.typography.headlineSmall.copy(
                     color = Color.Black,
                     fontWeight = FontWeight.Bold
@@ -216,7 +195,7 @@ fun StockListScreen() {
                         ) {
                             pair.forEach { product ->
                                 Box(modifier = Modifier.weight(1f)) {
-                                    StockItemCard(product)
+                                    ManageStockItemCard(product)
                                 }
                             }
                             if (pair.size < 2) {
@@ -243,7 +222,14 @@ fun StockListScreen() {
 
 
 @Composable
-fun StockItemCard(stockItem: ProductData) {
+fun ManageStockItemCard(stockItem: ProductData) {
+
+    var selectedProduct by remember { mutableStateOf<ProductData?>(null) }
+    var newStockValue by remember { mutableStateOf("") }
+    var showDialog by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier) {
 
@@ -286,16 +272,35 @@ fun StockItemCard(stockItem: ProductData) {
 //                    Text(":")
 //                    Spacer(modifier = Modifier.weight(1f))
                     Text("${stockItem.category}", color = Color.Black)
+
                 }
 
+                Spacer(modifier = Modifier.height(12.dp))
+
                 Row(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text("Stock", color = Color.Gray)
                     Spacer(modifier = Modifier.weight(1f))
 //                    Text(":")
 //                    Spacer(modifier = Modifier.weight(1f))
                     Text("${stockItem.stock}", color = Color.Black)
+
+                    Spacer(modifier = Modifier.width(6.dp))
+
+                    Image(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable {
+
+                                selectedProduct = stockItem
+                                newStockValue = stockItem.stock
+                                showDialog = true
+                            },
+                        painter = painterResource(id = R.drawable.iv_updatestock),
+                        contentDescription = "Update Stock"
+                    )
                 }
 
 
@@ -322,39 +327,84 @@ fun StockItemCard(stockItem: ProductData) {
                 }
 
             }
+
+            if (showDialog && selectedProduct != null) {
+                AlertDialog(
+                    onDismissRequest = { showDialog = false },
+                    title = { Text("Update Stock") },
+                    text = {
+                        Column {
+                            Text("Product: ${selectedProduct!!.name}")
+                            Spacer(modifier = Modifier.height(8.dp))
+                            OutlinedTextField(
+                                value = newStockValue,
+                                onValueChange = { newStockValue = it },
+                                label = { Text("New Stock") },
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                            )
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            val newStock = newStockValue.toIntOrNull()
+                            if (newStock != null) {
+
+                                val updatedData = mapOf(
+                                    "productId" to selectedProduct!!.productId,
+                                    "name" to selectedProduct!!.name,
+                                    "category" to selectedProduct!!.category,
+                                    "brand" to selectedProduct!!.brand,
+                                    "description" to selectedProduct!!.description,
+                                    "expiryDate" to selectedProduct!!.expiryDate,
+                                    "quantity" to selectedProduct!!.quantity,
+                                    "price" to selectedProduct!!.price,
+                                    "stock" to newStock.toString()
+                                )
+
+
+                                updateStock(selectedProduct!!.productId, updatedData, context)
+                            }
+                            showDialog = false
+                        }) {
+                            Text("Save")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showDialog = false }) {
+                            Text("Cancel")
+                        }
+                    }
+                )
+            }
         }
     }
 }
 
-fun getProducts(callback: (List<ProductData>) -> Unit) {
+fun updateStock(productId: String, updatedData: Map<String, Any>, context: Context) {
 
-    val databaseReference = FirebaseDatabase.getInstance().getReference("Products")
 
-    databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
-        override fun onDataChange(snapshot: DataSnapshot) {
-            val productsList = mutableListOf<ProductData>()
+    try {
+        val emailKey = GroceryStoreData.readMail(context)
+            .replace(".", ",")
+        val path = "Products/$emailKey/$productId"
+        FirebaseDatabase.getInstance().getReference(path).updateChildren(updatedData)
+            .addOnSuccessListener {
+                Toast.makeText(
+                    context,
+                    "Details Updated Successfully",
+                    Toast.LENGTH_SHORT
+                ).show()
 
-            for (donorSnapshot in snapshot.children) {
-                for (productSnapShot in donorSnapshot.children) {
-                    val product = productSnapShot.getValue(ProductData::class.java)
-                    product?.let { productsList.add(it) }
-                }
+                (context as Activity).finish()
             }
-
-            callback(productsList)
-        }
-
-        override fun onCancelled(error: DatabaseError) {
-            println("Error: ${error.message}")
-            callback(emptyList())
-        }
-    })
+            .addOnFailureListener {
+                Toast.makeText(
+                    context,
+                    "Failed to update",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+    } catch (e: Exception) {
+        Log.e("Test", "Error Message : ${e.message}")
+    }
 }
-
-data class StockItem(
-    val itemName: String,
-    val quantity: Int,
-    val expiryDate: String,
-    val category: String,
-    val stockStatus: String
-)

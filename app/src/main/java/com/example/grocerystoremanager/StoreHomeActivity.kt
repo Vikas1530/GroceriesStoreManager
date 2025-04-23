@@ -385,16 +385,24 @@ fun StoreHomeScreen() {
         Spacer(modifier = Modifier.height(8.dp))
 
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(horizontal = 12.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
 
             ManageItem(itemName = "Add\nProducts", itemImage = R.drawable.iv_grocery, itemCount = 1)
-            ManageItem(itemName = "Manage\nVendors", itemImage = R.drawable.iv_grocery, itemCount = 1)
-            ManageItem(itemName = "Manage\nStock", itemImage = R.drawable.iv_grocery, itemCount = 1)
-            ManageItem(itemName = "Update\nProducts", itemImage = R.drawable.iv_grocery, itemCount = 1)
-
+//            ManageItem(
+//                itemName = "Manage\nVendors",
+//                itemImage = R.drawable.iv_grocery,
+//                itemCount = 2
+//            )
+            ManageItem(itemName = "Manage\nStock", itemImage = R.drawable.iv_grocery, itemCount = 3)
+            ManageItem(
+                itemName = "Update\nProducts",
+                itemImage = R.drawable.iv_grocery,
+                itemCount = 4
+            )
 
 
         }
@@ -404,17 +412,20 @@ fun StoreHomeScreen() {
 }
 
 @Composable
-fun ManageItem(itemName: String,itemImage: Int,itemCount: Int)
-{
+fun ManageItem(itemName: String, itemImage: Int, itemCount: Int) {
     val context = LocalContext.current as Activity
 
     Column(
         modifier = Modifier
             .clickable {
-                when(itemCount)
-                {
+                when (itemCount) {
                     1 -> {
                         context.startActivity(Intent(context, AddProductsActivity::class.java))
+                    }
+
+                    3 -> {
+                        context.startActivity(Intent(context, ManageStockActivity::class.java))
+
                     }
                 }
             },

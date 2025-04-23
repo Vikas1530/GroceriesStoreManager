@@ -72,4 +72,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.firebase.database.ktx)  //s5
 
+    implementation("androidx.biometric:biometric:1.4.0-alpha02")
+
 }
