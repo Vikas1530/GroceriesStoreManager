@@ -3,7 +3,6 @@ package com.example.grocerystoremanager
 import android.app.Activity
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
@@ -44,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -112,7 +112,7 @@ fun StockListScreen() {
 //    }
 
     LaunchedEffect(userEmail) {
-        getProducts { orders ->
+        getProducts(userEmail) { orders ->
             productsList = orders
             loadProducts = false
 
@@ -309,7 +309,7 @@ fun StockItemCard(stockItem: ProductData) {
                     }
 
                     val color = when (stockStatus) {
-                        "Available" -> Color.Green
+                        "Available" -> colorResource(id = R.color.dark_green)
                         "Low Stock" -> Color.Red
                         else -> Color.Gray
                     }
@@ -326,19 +326,19 @@ fun StockItemCard(stockItem: ProductData) {
     }
 }
 
-fun getProducts(callback: (List<ProductData>) -> Unit) {
+fun getProducts(storeMail:String,callback: (List<ProductData>) -> Unit) {
 
-    val databaseReference = FirebaseDatabase.getInstance().getReference("Products")
+    val emailKey = storeMail.replace(".",",")
+    val databaseReference = FirebaseDatabase.getInstance().getReference("Products/$emailKey")
 
     databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
+
             val productsList = mutableListOf<ProductData>()
 
-            for (donorSnapshot in snapshot.children) {
-                for (productSnapShot in donorSnapshot.children) {
-                    val product = productSnapShot.getValue(ProductData::class.java)
-                    product?.let { productsList.add(it) }
-                }
+            for (bookSnapshot in snapshot.children) {
+                val book = bookSnapshot.getValue(ProductData::class.java)
+                book?.let { productsList.add(it) }
             }
 
             callback(productsList)

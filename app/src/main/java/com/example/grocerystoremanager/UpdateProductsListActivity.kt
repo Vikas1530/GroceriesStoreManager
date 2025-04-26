@@ -1,16 +1,15 @@
 package com.example.grocerystoremanager
 
 import android.app.Activity
-import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,9 +22,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -47,29 +48,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.google.firebase.database.FirebaseDatabase
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
-class ManageStockActivity : ComponentActivity() {
-
+class UpdateProductsListActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            ManageStockListScreen()
+            UpdateManageStockListScreen()
         }
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ManageStockListScreen() {
+fun UpdateManageStockListScreen() {
     val context = LocalContext.current as Activity
     val userEmail = GroceryStoreData.readMail(context)
     var productsList by remember { mutableStateOf(listOf<ProductData>()) }
@@ -102,7 +102,6 @@ fun ManageStockListScreen() {
         expiryFilter && stockFilter
     }
 
-
     LaunchedEffect(userEmail) {
         getProducts(userEmail) { orders ->
             productsList = orders
@@ -132,7 +131,7 @@ fun ManageStockListScreen() {
             Text(
                 modifier = Modifier
                     .padding(12.dp),
-                text = "Manage Stock",
+                text = "Update Products",
                 style = MaterialTheme.typography.headlineSmall.copy(
                     color = Color.Black,
                     fontWeight = FontWeight.Bold
@@ -181,7 +180,7 @@ fun ManageStockListScreen() {
                         ) {
                             pair.forEach { product ->
                                 Box(modifier = Modifier.weight(1f)) {
-                                    ManageStockItemCard(product)
+                                    UpdateProductItemCard(product)
                                 }
                             }
                             if (pair.size < 2) {
@@ -208,7 +207,7 @@ fun ManageStockListScreen() {
 
 
 @Composable
-fun ManageStockItemCard(stockItem: ProductData) {
+fun UpdateProductItemCard(stockItem: ProductData) {
 
     var selectedProduct by remember { mutableStateOf<ProductData?>(null) }
     var newStockValue by remember { mutableStateOf("") }
@@ -273,20 +272,7 @@ fun ManageStockItemCard(stockItem: ProductData) {
 //                    Spacer(modifier = Modifier.weight(1f))
                     Text("${stockItem.stock}", color = Color.Black)
 
-                    Spacer(modifier = Modifier.width(6.dp))
 
-                    Image(
-                        modifier = Modifier
-                            .size(24.dp)
-                            .clickable {
-
-                                selectedProduct = stockItem
-                                newStockValue = stockItem.stock
-                                showDialog = true
-                            },
-                        painter = painterResource(id = R.drawable.iv_updatestock),
-                        contentDescription = "Update Stock"
-                    )
                 }
 
 
@@ -300,7 +286,7 @@ fun ManageStockItemCard(stockItem: ProductData) {
                     }
 
                     val color = when (stockStatus) {
-                        "Available" -> Color.Green
+                        "Available" -> colorResource(id = R.color.dark_green)
                         "Low Stock" -> Color.Red
                         else -> Color.Gray
                     }
@@ -311,6 +297,40 @@ fun ManageStockItemCard(stockItem: ProductData) {
                     )
                     Text("  $stockStatus", color = color)
                 }
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = "Update",
+                    color = Color.White,
+                    modifier = Modifier
+                        .wrapContentHeight()
+                        .clickable {
+                            SelectedProduct.productItem = stockItem
+                            context.startActivity(
+                                Intent(
+                                    context,
+                                    UpdateProductActivity::class.java
+                                )
+                            )
+
+                        }
+                        .background(
+                            color = colorResource(id = R.color.black),
+                            shape = RoundedCornerShape(
+                                6.dp
+                            )
+                        )
+                        .border(
+                            width = 1.dp,
+                            color = colorResource(id = R.color.black),
+                            shape = RoundedCornerShape(6.dp)
+                        )
+                        .padding(
+                            horizontal = 12.dp,
+                            vertical = 4.dp
+                        )
+                )
 
             }
 
@@ -363,34 +383,5 @@ fun ManageStockItemCard(stockItem: ProductData) {
                 )
             }
         }
-    }
-}
-
-fun updateStock(productId: String, updatedData: Map<String, Any>, context: Context) {
-
-
-    try {
-        val emailKey = GroceryStoreData.readMail(context)
-            .replace(".", ",")
-        val path = "Products/$emailKey/$productId"
-        FirebaseDatabase.getInstance().getReference(path).updateChildren(updatedData)
-            .addOnSuccessListener {
-                Toast.makeText(
-                    context,
-                    "Details Updated Successfully",
-                    Toast.LENGTH_SHORT
-                ).show()
-
-                (context as Activity).finish()
-            }
-            .addOnFailureListener {
-                Toast.makeText(
-                    context,
-                    "Failed to update",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-    } catch (e: Exception) {
-        Log.e("Test", "Error Message : ${e.message}")
     }
 }

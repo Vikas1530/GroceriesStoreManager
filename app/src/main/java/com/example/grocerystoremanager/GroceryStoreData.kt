@@ -39,5 +39,16 @@ object GroceryStoreData {
         return userLogin.getString("USERMAIL", "")!!
     }
 
+    fun writeAddress(context: Context, value: String) {
+        val userLogin = context.getSharedPreferences("USER_DETAILS", Context.MODE_PRIVATE)
+        val editor = userLogin.edit()
+        editor.putString("Address", value).apply()
+    }
+
+    fun readAddress(context: Context): String {
+        val userLogin = context.getSharedPreferences("USER_DETAILS", Context.MODE_PRIVATE)
+        return userLogin.getString("Address", "")!!
+    }
+
 
 }

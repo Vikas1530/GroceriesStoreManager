@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -45,217 +44,6 @@ class StoreHomeActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun StoreHomeActivityScreen() {
-
-//    val context = LocalContext.current as Activity
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Red)
-    ) {
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Text(
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(12.dp),
-            text = "Grocery Store Manager",
-            style = MaterialTheme.typography.headlineLarge.copy(
-                color = Color.White,
-                fontWeight = FontWeight.Bold
-            )
-        )
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(12.dp)
-                .background(
-                    color = colorResource(id = R.color.white),
-                    shape = RoundedCornerShape(8.dp)
-                )
-                .border(
-                    width = 1.dp,
-                    color = colorResource(id = R.color.white),
-                    shape = RoundedCornerShape(6.dp)
-                )
-                .padding(16.dp)
-        ) {
-
-            Row(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .wrapContentHeight()
-                        .border(
-                            width = 1.dp,
-                            color = colorResource(id = R.color.black),
-                            shape = RoundedCornerShape(6.dp)
-                        )
-                        .padding(horizontal = 0.dp, vertical = 12.dp)
-                        .clickable {
-
-                        }
-                ) {
-                    Image(
-                        modifier = Modifier
-                            .size(100.dp)
-                            .align(Alignment.CenterHorizontally),
-                        painter = painterResource(id = R.drawable.iv_grocery),
-                        contentDescription = "Store Icon"
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-
-                    Text(
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally),
-                        text = "Add New Stock",
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            color = Color.Black,
-                            fontWeight = FontWeight.Bold
-                        )
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(12.dp))
-
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .wrapContentHeight()
-                        .border(
-                            width = 1.dp,
-                            color = colorResource(id = R.color.black),
-                            shape = RoundedCornerShape(6.dp)
-                        )
-                        .padding(horizontal = 0.dp, vertical = 12.dp)
-                        .clickable {
-                        }
-                ) {
-                    Image(
-                        modifier = Modifier
-                            .size(100.dp)
-                            .align(Alignment.CenterHorizontally),
-                        painter = painterResource(id = R.drawable.iv_grocery),
-                        contentDescription = "Store Icon"
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-
-                    Text(
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally),
-                        text = "Add Vendors",
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            color = Color.Black,
-                            fontWeight = FontWeight.Bold
-                        )
-                    )
-                }
-
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-
-                Column(
-                    modifier = Modifier
-                        .clickable {
-                        }
-                        .weight(1f)
-                        .wrapContentHeight()
-                        .border(
-                            width = 1.dp,
-                            color = colorResource(id = R.color.black),
-                            shape = RoundedCornerShape(6.dp)
-                        )
-                        .padding(horizontal = 0.dp, vertical = 12.dp)
-
-
-                ) {
-                    Image(
-                        modifier = Modifier
-                            .size(100.dp)
-                            .align(Alignment.CenterHorizontally),
-                        painter = painterResource(id = R.drawable.iv_grocery),
-                        contentDescription = "Store Icon"
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-
-                    Text(
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally),
-                        text = "Manage Stock",
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            color = Color.Black,
-                            fontWeight = FontWeight.Bold
-                        )
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(12.dp))
-
-                Column(
-                    modifier = Modifier
-                        .clickable {
-                        }
-                        .weight(1f)
-                        .wrapContentHeight()
-                        .border(
-                            width = 1.dp,
-                            color = colorResource(id = R.color.black),
-                            shape = RoundedCornerShape(6.dp)
-                        )
-                        .padding(horizontal = 0.dp, vertical = 12.dp)
-
-                ) {
-                    Image(
-                        modifier = Modifier
-                            .size(100.dp)
-                            .align(Alignment.CenterHorizontally),
-                        painter = painterResource(id = R.drawable.iv_grocery),
-                        contentDescription = "Store Icon"
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-
-                    Text(
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally),
-                        text = "My Profile",
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            color = Color.Black,
-                            fontWeight = FontWeight.Bold
-                        )
-                    )
-                }
-
-            }
-
-
-        }
-
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
 fun StoreHomeScreenP() {
@@ -271,12 +59,13 @@ fun StoreHomeScreen() {
         modifier = Modifier.fillMaxSize()
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                modifier = Modifier
-                    .padding(12.dp),
+                modifier = Modifier,
                 text = "Grocery Store Manager",
                 style = MaterialTheme.typography.headlineSmall.copy(
                     color = Color.Black,
@@ -288,9 +77,13 @@ fun StoreHomeScreen() {
 
             Image(
                 modifier = Modifier
-                    .size(36.dp),
-                painter = painterResource(id = R.drawable.iv_grocery),
-                contentDescription = "Store Icon"
+                    .size(36.dp)
+                    .clickable {
+                        context.startActivity(Intent(context, StoreProfileActivity::class.java))
+
+                    },
+                painter = painterResource(id = R.drawable.store_profile),
+                contentDescription = "Store Profile"
             )
         }
 
@@ -392,16 +185,18 @@ fun StoreHomeScreen() {
         ) {
 
             ManageItem(itemName = "Add\nProducts", itemImage = R.drawable.iv_grocery, itemCount = 1)
-//            ManageItem(
-//                itemName = "Manage\nVendors",
-//                itemImage = R.drawable.iv_grocery,
-//                itemCount = 2
-//            )
+
             ManageItem(itemName = "Manage\nStock", itemImage = R.drawable.iv_grocery, itemCount = 3)
             ManageItem(
                 itemName = "Update\nProducts",
                 itemImage = R.drawable.iv_grocery,
                 itemCount = 4
+            )
+
+            ManageItem(
+                itemName = "Add\nOffers",
+                itemImage = R.drawable.iv_grocery,
+                itemCount = 5
             )
 
 
@@ -425,6 +220,16 @@ fun ManageItem(itemName: String, itemImage: Int, itemCount: Int) {
 
                     3 -> {
                         context.startActivity(Intent(context, ManageStockActivity::class.java))
+
+                    }
+
+                    4 -> {
+                        context.startActivity(
+                            Intent(
+                                context,
+                                UpdateProductsListActivity::class.java
+                            )
+                        )
 
                     }
                 }
