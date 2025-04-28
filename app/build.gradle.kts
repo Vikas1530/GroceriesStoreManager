@@ -2,14 +2,16 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("com.google.gms.google-services") //s2
+    id("kotlin-kapt")
+
 }
 
 android {
-    namespace = "com.example.grocerystoremanager"
+    namespace = "s3446484.grocerystore.murivikasredd"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.grocerystoremanager"
+        applicationId = "s3446484.grocerystore.murivikasredd"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
@@ -73,5 +75,12 @@ dependencies {
     implementation(libs.firebase.database.ktx)  //s5
 
     implementation("androidx.biometric:biometric:1.4.0-alpha02")
+
+    implementation("androidx.room:room-runtime:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+
+    implementation("io.coil-kt:coil-compose:2.4.0")
+
 
 }

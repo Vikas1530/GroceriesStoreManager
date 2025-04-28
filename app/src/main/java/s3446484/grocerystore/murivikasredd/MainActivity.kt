@@ -1,10 +1,9 @@
-package com.example.grocerystoremanager
+package s3446484.grocerystore.murivikasredd
 
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.biometric.BiometricManager
@@ -54,7 +53,7 @@ class MainActivity : FragmentActivity() {
 }
 
 @Composable
-fun StoreStatusValidator(fragmentActivity : FragmentActivity) {
+fun StoreStatusValidator(fragmentActivity: FragmentActivity) {
     val context = LocalContext.current as Activity
     var showSplash by remember { mutableStateOf(true) }
 
@@ -71,18 +70,7 @@ fun StoreStatusValidator(fragmentActivity : FragmentActivity) {
 
     } else {
 
-        val currentStatus = GroceryStoreData.readLS(context)
-
-//        if(currentStatus)
-//        {
-//            context.startActivity(Intent(context, StoreHomeActivity::class.java))
-//            context.finish()
-//        }else{
-//            context.startActivity(Intent(context, LoginActivity::class.java))
-//            context.finish()
-//        }
-
-        if (currentStatus) {
+        if (GroceryStoreData.readLS(context)) {
             val biometricManager = BiometricManager.from(fragmentActivity)
             if (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG) == BiometricManager.BIOMETRIC_SUCCESS) {
                 val executor = ContextCompat.getMainExecutor(fragmentActivity)
@@ -99,6 +87,7 @@ fun StoreStatusValidator(fragmentActivity : FragmentActivity) {
                                         StoreHomeActivity::class.java
                                     )
                                 )
+                                context.finish()
                             }
 
                             override fun onAuthenticationError(
@@ -131,7 +120,7 @@ fun StoreStatusValidator(fragmentActivity : FragmentActivity) {
                     Toast.LENGTH_LONG
                 ).show()
                 context.startActivity(Intent(context, StoreHomeActivity::class.java))
-
+                context.finish()
             }
         } else {
             context.startActivity(Intent(context, LoginActivity::class.java))
@@ -190,7 +179,7 @@ fun SplashScreen() {
             {
                 Image(
                     modifier = Modifier.size(200.dp, 200.dp),
-                    painter = painterResource(id = R.drawable.grocery_icon),
+                    painter = painterResource(id = R.drawable.app_icon),
                     contentDescription = "Grocery Store Manager",
                 )
 

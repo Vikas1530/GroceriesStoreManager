@@ -1,4 +1,4 @@
-package com.example.grocerystoremanager.ui.theme
+package s3446484.grocerystore.murivikasredd.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

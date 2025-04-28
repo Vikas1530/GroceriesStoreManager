@@ -1,4 +1,4 @@
-package com.example.grocerystoremanager
+package s3446484.grocerystore.murivikasredd
 
 import android.app.Activity
 import android.content.Context
@@ -33,6 +33,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -104,25 +105,11 @@ fun ManageStockListScreen() {
 
 
     LaunchedEffect(userEmail) {
-        getProducts() { orders ->
+        getProducts(userEmail) { orders ->
             productsList = orders
             loadProducts = false
         }
     }
-
-//    LaunchedEffect(userEmail) {
-//        getProducts { orders ->
-//            productsList = orders
-//            loadProducts = false
-//
-//            val lowStock = orders.filter { it.stock.toInt() < 20 }
-//            if (lowStock.isNotEmpty()) {
-//                lowStockProducts = lowStock
-//                showDialog = true
-//            }
-//        }
-//    }
-
 
     Column(modifier = Modifier.fillMaxSize()) {
         Row(
@@ -186,35 +173,39 @@ fun ManageStockListScreen() {
                 )
             }
 
-            if (filteredProducts.isNotEmpty()) {
-                LazyColumn {
-                    items(filteredProducts.chunked(2)) { pair ->
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            pair.forEach { product ->
-                                Box(modifier = Modifier.weight(1f)) {
-                                    ManageStockItemCard(product)
+            if (loadProducts) {
+                LinearProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+            } else {
+                if (filteredProducts.isNotEmpty()) {
+                    LazyColumn {
+                        items(filteredProducts.chunked(2)) { pair ->
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                pair.forEach { product ->
+                                    Box(modifier = Modifier.weight(1f)) {
+                                        ManageStockItemCard(product)
+                                    }
+                                }
+                                if (pair.size < 2) {
+                                    Spacer(modifier = Modifier.weight(1f))
                                 }
                             }
-                            if (pair.size < 2) {
-                                Spacer(modifier = Modifier.weight(1f))
-                            }
+                            Spacer(modifier = Modifier.height(8.dp))
                         }
-                        Spacer(modifier = Modifier.height(8.dp))
                     }
-                }
-            } else {
-                Text(
-                    modifier = Modifier
-                        .padding(12.dp),
-                    text = "No Products Found",
-                    style = MaterialTheme.typography.headlineSmall.copy(
-                        color = Color.Black,
-                        fontWeight = FontWeight.Bold
+                } else {
+                    Text(
+                        modifier = Modifier
+                            .padding(12.dp),
+                        text = "No Products Found",
+                        style = MaterialTheme.typography.headlineSmall.copy(
+                            color = Color.Black,
+                            fontWeight = FontWeight.Bold
+                        )
                     )
-                )
+                }
             }
         }
     }

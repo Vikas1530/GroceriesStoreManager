@@ -1,15 +1,16 @@
 {
   "project_info": {
     "project_number": "392891045027",
+    "firebase_url": "https://grocerystockmanager-default-rtdb.firebaseio.com",
     "project_id": "grocerystockmanager",
     "storage_bucket": "grocerystockmanager.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:392891045027:android:c6c1bace2849048fb85b16",
+        "mobilesdk_app_id": "1:392891045027:android:606d739b147d6d1bb85b16",
         "android_client_info": {
-          "package_name": "com.example.grocerystoremanager"
+          "package_name": "s3446484.grocerystore.murivikasredd"
         }
       },
       "oauth_client": [],

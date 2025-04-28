@@ -1,4 +1,4 @@
-package com.example.grocerystoremanager
+package s3446484.grocerystore.murivikasredd
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

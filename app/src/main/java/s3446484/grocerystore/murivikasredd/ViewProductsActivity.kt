@@ -1,9 +1,8 @@
-package com.example.grocerystoremanager
+package s3446484.grocerystore.murivikasredd
 
 import android.app.Activity
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
@@ -30,6 +29,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -44,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -104,15 +105,8 @@ fun StockListScreen() {
     }
 
 
-//    LaunchedEffect(userEmail) {
-//        getProducts() { orders ->
-//            productsList = orders
-//            loadProducts = false
-//        }
-//    }
-
     LaunchedEffect(userEmail) {
-        getProducts { orders ->
+        getProducts(userEmail) { orders ->
             productsList = orders
             loadProducts = false
 
@@ -190,7 +184,6 @@ fun StockListScreen() {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Chip Filters Row
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.padding(bottom = 12.dp)
@@ -207,35 +200,40 @@ fun StockListScreen() {
                 )
             }
 
-            if (filteredProducts.isNotEmpty()) {
-                LazyColumn {
-                    items(filteredProducts.chunked(2)) { pair ->
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            pair.forEach { product ->
-                                Box(modifier = Modifier.weight(1f)) {
-                                    StockItemCard(product)
+            if (loadProducts) {
+                LinearProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+            } else {
+
+                if (filteredProducts.isNotEmpty()) {
+                    LazyColumn {
+                        items(filteredProducts.chunked(2)) { pair ->
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                pair.forEach { product ->
+                                    Box(modifier = Modifier.weight(1f)) {
+                                        StockItemCard(product)
+                                    }
+                                }
+                                if (pair.size < 2) {
+                                    Spacer(modifier = Modifier.weight(1f))
                                 }
                             }
-                            if (pair.size < 2) {
-                                Spacer(modifier = Modifier.weight(1f))
-                            }
+                            Spacer(modifier = Modifier.height(8.dp))
                         }
-                        Spacer(modifier = Modifier.height(8.dp))
                     }
-                }
-            } else {
-                Text(
-                    modifier = Modifier
-                        .padding(12.dp),
-                    text = "No Products Found",
-                    style = MaterialTheme.typography.headlineSmall.copy(
-                        color = Color.Black,
-                        fontWeight = FontWeight.Bold
+                } else {
+                    Text(
+                        modifier = Modifier
+                            .padding(12.dp),
+                        text = "No Products Found",
+                        style = MaterialTheme.typography.headlineSmall.copy(
+                            color = Color.Black,
+                            fontWeight = FontWeight.Bold
+                        )
                     )
-                )
+                }
             }
         }
     }
@@ -309,7 +307,7 @@ fun StockItemCard(stockItem: ProductData) {
                     }
 
                     val color = when (stockStatus) {
-                        "Available" -> Color.Green
+                        "Available" -> colorResource(id = R.color.dark_green)
                         "Low Stock" -> Color.Red
                         else -> Color.Gray
                     }
@@ -326,23 +324,34 @@ fun StockItemCard(stockItem: ProductData) {
     }
 }
 
-fun getProducts(callback: (List<ProductData>) -> Unit) {
+fun getProducts(storeMail: String, callback: (List<ProductData>) -> Unit) {
 
-    val databaseReference = FirebaseDatabase.getInstance().getReference("Products")
+    val emailKey = storeMail.replace(".", ",")
+    val databaseReference = FirebaseDatabase.getInstance().getReference("Products/$emailKey")
 
     databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
+//            val productsList = mutableListOf<ProductData>()
+//
+//            for (donorSnapshot in snapshot.children) {
+//                for (productSnapShot in donorSnapshot.children) {
+//                    val product = productSnapShot.getValue(ProductData::class.java)
+//                    product?.let { productsList.add(it) }
+//                }
+//            }
+//
+//            callback(productsList)
+
             val productsList = mutableListOf<ProductData>()
 
-            for (donorSnapshot in snapshot.children) {
-                for (productSnapShot in donorSnapshot.children) {
-                    val product = productSnapShot.getValue(ProductData::class.java)
-                    product?.let { productsList.add(it) }
-                }
+            for (bookSnapshot in snapshot.children) {
+                val book = bookSnapshot.getValue(ProductData::class.java)
+                book?.let { productsList.add(it) }
             }
 
             callback(productsList)
         }
+
 
         override fun onCancelled(error: DatabaseError) {
             println("Error: ${error.message}")

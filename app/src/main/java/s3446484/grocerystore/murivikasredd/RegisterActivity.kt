@@ -1,4 +1,4 @@
-package com.example.grocerystoremanager
+package s3446484.grocerystore.murivikasredd
 
 import android.app.Activity
 import android.content.Context
@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -100,7 +99,7 @@ fun RegistrationScreen() {
             {
 
                 Text(
-                    text = "Username",
+                    text = "Store Name",
                     color = colorResource(id = R.color.black),
                     style = MaterialTheme.typography.bodyMedium,
                 )
@@ -116,7 +115,7 @@ fun RegistrationScreen() {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "Email Id",
+                    text = "Store EmailId",
                     color = colorResource(id = R.color.black),
                     style = MaterialTheme.typography.bodyMedium,
                 )
@@ -131,7 +130,7 @@ fun RegistrationScreen() {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "Location",
+                    text = "Store Address",
                     color = colorResource(id = R.color.black),
                     style = MaterialTheme.typography.bodyMedium,
                 )
@@ -147,7 +146,7 @@ fun RegistrationScreen() {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "Password",
+                    text = "Account Password",
                     color = colorResource(id = R.color.black),
                     style = MaterialTheme.typography.bodyMedium,
                 )
@@ -165,13 +164,22 @@ fun RegistrationScreen() {
                 Button(
                     onClick = {
                         when {
-                            useremail.isEmpty() -> {
-//                            Toast.makeText(context, " Please Enter Mail", Toast.LENGTH_SHORT).show()
+                            userName.isEmpty() ->{
+                                Toast.makeText(context, " Please Enter Store Name", Toast.LENGTH_SHORT).show()
                             }
 
+                            useremail.isEmpty() -> {
+                            Toast.makeText(context, " Please Enter Mail", Toast.LENGTH_SHORT).show()
+                            }
+
+                            userLocation.isEmpty() -> {
+                                Toast.makeText(context, " Please Enter Address", Toast.LENGTH_SHORT).show()
+                            }
+
+
                             userpassword.isEmpty() -> {
-//                            Toast.makeText(context, " Please Enter Password", Toast.LENGTH_SHORT)
-//                                .show()
+                            Toast.makeText(context, " Please Enter Password", Toast.LENGTH_SHORT)
+                                .show()
                             }
 
                             else -> {
@@ -243,6 +251,9 @@ fun registerUser(userDetails: UserDetails, context: Context) {
             if (task.isSuccessful) {
                 Toast.makeText(context, "You Registered Successfully", Toast.LENGTH_SHORT)
                     .show()
+
+                context.startActivity(Intent(context, LoginActivity::class.java))
+                (context as Activity).finish()
 
             } else {
                 Toast.makeText(

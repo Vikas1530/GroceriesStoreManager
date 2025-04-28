@@ -1,4 +1,4 @@
-package com.example.grocerystoremanager
+package s3446484.grocerystore.murivikasredd
 
 import android.app.Activity
 import android.content.Context
@@ -148,7 +148,7 @@ fun LoginScreen() {
                                     userpassword
                                 )
 
-                                loginUser(userDetails,context)
+                                loginUser(userDetails, context)
                             }
 
                         }
@@ -202,7 +202,8 @@ fun LoginScreen() {
 fun loginUser(userDetails: UserDetails, context: Context) {
 
     val firebaseDatabase = FirebaseDatabase.getInstance()
-    val databaseReference = firebaseDatabase.getReference("StoreDetails").child(userDetails.emailid.replace(".", ","))
+    val databaseReference =
+        firebaseDatabase.getReference("StoreDetails").child(userDetails.emailid.replace(".", ","))
 
     databaseReference.get().addOnCompleteListener { task ->
         if (task.isSuccessful) {
@@ -213,13 +214,16 @@ fun loginUser(userDetails: UserDetails, context: Context) {
                     GroceryStoreData.writeLS(context, true)
                     GroceryStoreData.writeMail(context, storeData.emailid)
                     GroceryStoreData.writeUserName(context, storeData.name)
+                    GroceryStoreData.writeAddress(context, storeData.age)
 
                     context.startActivity(Intent(context, StoreHomeActivity::class.java))
+                    (context as Activity).finish()
 
                     Toast.makeText(context, "Login Sucessfully", Toast.LENGTH_SHORT).show()
 
                 } else {
-                    Toast.makeText(context, "Seems Incorrect Credentials", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Seems Incorrect Credentials", Toast.LENGTH_SHORT)
+                        .show()
                 }
             } else {
                 Toast.makeText(context, "Your account not found", Toast.LENGTH_SHORT).show()

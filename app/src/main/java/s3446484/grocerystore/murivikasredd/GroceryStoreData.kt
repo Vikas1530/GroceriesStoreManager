@@ -1,4 +1,4 @@
-package com.example.grocerystoremanager
+package s3446484.grocerystore.murivikasredd
 
 import android.content.Context
 
@@ -37,6 +37,17 @@ object GroceryStoreData {
     fun readMail(context: Context): String {
         val userLogin = context.getSharedPreferences("USER_DETAILS", Context.MODE_PRIVATE)
         return userLogin.getString("USERMAIL", "")!!
+    }
+
+    fun writeAddress(context: Context, value: String) {
+        val userLogin = context.getSharedPreferences("USER_DETAILS", Context.MODE_PRIVATE)
+        val editor = userLogin.edit()
+        editor.putString("Address", value).apply()
+    }
+
+    fun readAddress(context: Context): String {
+        val userLogin = context.getSharedPreferences("USER_DETAILS", Context.MODE_PRIVATE)
+        return userLogin.getString("Address", "")!!
     }
 
 

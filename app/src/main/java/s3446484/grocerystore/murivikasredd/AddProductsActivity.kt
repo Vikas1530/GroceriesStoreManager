@@ -1,4 +1,4 @@
-package com.example.grocerystoremanager
+package s3446484.grocerystore.murivikasredd
 
 import android.app.Activity
 import android.app.DatePickerDialog
@@ -49,7 +49,6 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-import kotlin.math.exp
 
 class AddProductsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
