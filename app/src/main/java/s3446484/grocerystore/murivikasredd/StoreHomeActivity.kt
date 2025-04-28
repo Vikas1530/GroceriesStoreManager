@@ -245,6 +245,16 @@ fun ManageItem(itemName: String, itemImage: Int, itemCount: Int) {
                             )
                         )
                     }
+
+                    4 -> {
+                        context.startActivity(
+                            Intent(
+                                context,
+                                UpdateProductsListActivity::class.java
+                            )
+                        )
+
+                    }
                 }
             },
         horizontalAlignment = Alignment.CenterHorizontally
