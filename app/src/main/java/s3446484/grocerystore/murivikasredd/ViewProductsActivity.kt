@@ -14,11 +14,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -139,7 +142,7 @@ fun StockListScreen() {
         )
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize().padding(WindowInsets.systemBars.asPaddingValues())) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -331,21 +334,12 @@ fun getProducts(storeMail: String, callback: (List<ProductData>) -> Unit) {
 
     databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
-//            val productsList = mutableListOf<ProductData>()
-//
-//            for (donorSnapshot in snapshot.children) {
-//                for (productSnapShot in donorSnapshot.children) {
-//                    val product = productSnapShot.getValue(ProductData::class.java)
-//                    product?.let { productsList.add(it) }
-//                }
-//            }
-//
-//            callback(productsList)
+
 
             val productsList = mutableListOf<ProductData>()
 
-            for (bookSnapshot in snapshot.children) {
-                val book = bookSnapshot.getValue(ProductData::class.java)
+            for (stockSnapShot in snapshot.children) {
+                val book = stockSnapShot.getValue(ProductData::class.java)
                 book?.let { productsList.add(it) }
             }
 
@@ -360,10 +354,4 @@ fun getProducts(storeMail: String, callback: (List<ProductData>) -> Unit) {
     })
 }
 
-data class StockItem(
-    val itemName: String,
-    val quantity: Int,
-    val expiryDate: String,
-    val category: String,
-    val stockStatus: String
-)
+

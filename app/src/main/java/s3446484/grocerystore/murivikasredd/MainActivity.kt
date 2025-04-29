@@ -69,64 +69,7 @@ fun StoreStatusValidator(fragmentActivity: FragmentActivity) {
         SplashScreen()
 
     } else {
-
-        if (GroceryStoreData.readLS(context)) {
-            val biometricManager = BiometricManager.from(fragmentActivity)
-            if (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG) == BiometricManager.BIOMETRIC_SUCCESS) {
-                val executor = ContextCompat.getMainExecutor(fragmentActivity)
-                val biometricPrompt =
-                    BiometricPrompt(
-                        fragmentActivity,
-                        executor,
-                        object : BiometricPrompt.AuthenticationCallback() {
-                            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                                super.onAuthenticationSucceeded(result)
-                                context.startActivity(
-                                    Intent(
-                                        context,
-                                        StoreHomeActivity::class.java
-                                    )
-                                )
-                                context.finish()
-                            }
-
-                            override fun onAuthenticationError(
-                                errorCode: Int,
-                                errString: CharSequence
-                            ) {
-                                super.onAuthenticationError(errorCode, errString)
-                                Toast.makeText(context, "Something went wrong", Toast.LENGTH_LONG)
-                                    .show()
-                            }
-
-                            override fun onAuthenticationFailed() {
-                                super.onAuthenticationFailed()
-                                Toast.makeText(context, "Something went wrong", Toast.LENGTH_LONG)
-                                    .show()
-                            }
-                        })
-
-                val promptInfo = BiometricPrompt.PromptInfo.Builder()
-                    .setTitle("FingerPrint Verification")
-                    .setSubtitle("Place your finger to continue")
-                    .setNegativeButtonText("Close")
-                    .build()
-
-                biometricPrompt.authenticate(promptInfo)
-            } else {
-                Toast.makeText(
-                    fragmentActivity,
-                    "This device doesn't support fingerprint",
-                    Toast.LENGTH_LONG
-                ).show()
-                context.startActivity(Intent(context, StoreHomeActivity::class.java))
-                context.finish()
-            }
-        } else {
-            context.startActivity(Intent(context, LoginActivity::class.java))
-            context.finish()
-        }
-
+        verifyUserFingerPrint(fragmentActivity, context)
     }
 
 }
@@ -134,7 +77,6 @@ fun StoreStatusValidator(fragmentActivity: FragmentActivity) {
 @Composable
 fun SplashScreen() {
 
-//    val context = LocalContext.current as Activity
 
     Column(
         modifier = Modifier
@@ -206,6 +148,65 @@ fun SplashScreen() {
         }
     }
 
+}
+
+fun verifyUserFingerPrint(fragmentActivity: FragmentActivity, context: Activity) {
+    if (GroceryStoreData.readLS(context)) {
+        val storeVerificationManager = BiometricManager.from(fragmentActivity)
+        if (storeVerificationManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG) == BiometricManager.BIOMETRIC_SUCCESS) {
+            val executor = ContextCompat.getMainExecutor(fragmentActivity)
+            val biometricPrompt =
+                BiometricPrompt(
+                    fragmentActivity,
+                    executor,
+                    object : BiometricPrompt.AuthenticationCallback() {
+                        override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                            super.onAuthenticationSucceeded(result)
+                            context.startActivity(
+                                Intent(
+                                    context,
+                                    StoreHomeActivity::class.java
+                                )
+                            )
+                            context.finish()
+                        }
+
+                        override fun onAuthenticationError(
+                            errorCode: Int,
+                            errString: CharSequence
+                        ) {
+                            super.onAuthenticationError(errorCode, errString)
+                            Toast.makeText(context, "Something went wrong", Toast.LENGTH_LONG)
+                                .show()
+                        }
+
+                        override fun onAuthenticationFailed() {
+                            super.onAuthenticationFailed()
+                            Toast.makeText(context, "Something went wrong", Toast.LENGTH_LONG)
+                                .show()
+                        }
+                    })
+
+            val promptInfo = BiometricPrompt.PromptInfo.Builder()
+                .setTitle("FingerPrint Verification")
+                .setSubtitle("Place your finger to continue")
+                .setNegativeButtonText("Close")
+                .build()
+
+            biometricPrompt.authenticate(promptInfo)
+        } else {
+            Toast.makeText(
+                fragmentActivity,
+                "FingerPrint not supported",
+                Toast.LENGTH_LONG
+            ).show()
+            context.startActivity(Intent(context, StoreHomeActivity::class.java))
+            context.finish()
+        }
+    } else {
+        context.startActivity(Intent(context, LoginActivity::class.java))
+        context.finish()
+    }
 }
 
 
